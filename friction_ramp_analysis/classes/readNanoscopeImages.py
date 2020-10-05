@@ -130,7 +130,7 @@ class NanoscopeImage():
                 	numbers = re.findall(r'\d+$', _line)
                 	self.headerParameters[key].append(int(numbers[0]))
                 else:
-	                numbers = re.findall(r'\d+\.?\d+', _line)
+	                numbers = re.findall(r'-?\d+\.?\d+', _line)
 	                # If _line contains the strings 'LSB' or '@', only populate
 	                # the key value with the last number from _line. If not,
 	                # populate it with all numbers.
@@ -260,6 +260,7 @@ class NanoscopeImage():
 
     def test5(self):
         print(type(self.headerParameters['@2:AFMSetDeflection'][0]))
+        print(self.headerParameters['@2:AFMSetDeflection'][0])
         a = self.getChannel('Friction','Retrace')
         fig = plt.figure(frameon=False)
         fig.set_size_inches(4,4)
