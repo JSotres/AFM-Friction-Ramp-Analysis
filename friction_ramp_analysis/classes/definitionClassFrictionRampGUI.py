@@ -8,9 +8,6 @@ from ..qt5_ui_files.frictionGUI import *
 from matplotlib.backends.backend_qt5agg import (NavigationToolbar2QT as NavigationToolbar)
 import os
 import math
-#import cv2
-#import pandas as pd
-from ..qt5_ui_files.mplwidgetsingle import MplWidgetSingle
 
 
 class frictionRampGUI(QMainWindow):
