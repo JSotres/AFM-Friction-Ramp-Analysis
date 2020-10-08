@@ -172,10 +172,6 @@ class frictionRampGUI(QMainWindow):
 
 		for i in range(self.numberOfFiles):
 			self.loadForce[i] = (self.rawSetPoints[i] - (initV+i*delta)) * vertSens * normConst
-			print('-----')
-			print(initV+i*delta)
-			print(self.rawSetPoints[i])
-			print(self.loadForce[i])
 
 		self.frictionRampN = self.frictionRampV * torsConst / (latSens * tipHeight)
 
