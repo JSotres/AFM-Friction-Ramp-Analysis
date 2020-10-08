@@ -10,9 +10,8 @@ from .classes.callFrictionRampGUI import (
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    # Creates an instance of the vnaReaderMainGui class
-    # defined in definition_class_my_vna_reader_main_gui
-    # It opens the main GUI of the program
+    # Creates an instance of the main GUI
+    # defined in defined in callForceRampGUI.py
     w = frictionRampGUI()
     w.show()
     sys.exit(app.exec_())

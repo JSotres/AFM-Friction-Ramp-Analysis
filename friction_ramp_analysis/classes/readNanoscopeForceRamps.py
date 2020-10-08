@@ -12,6 +12,10 @@ from scipy.optimize import curve_fit
 class NanoscopeRamp():
 
     def __init__(self, file_name):
+        '''
+        Initialization of attributes
+        when creating an instance of the class
+        '''
         self.headerParameters = {'Sens. Zsens:': [],
                                  'Data offset': [],
                                  'Data length:': [],
@@ -30,7 +34,9 @@ class NanoscopeRamp():
         self.Ramp = []
 
     def readHeader(self):
-
+        '''
+        Reads the header of the file line by line
+        '''
         file = open(self.file_name, 'r', encoding='cp1252')
         while (not self.header_end) and (not self.eof):
             for line in file:
@@ -80,6 +86,10 @@ class NanoscopeRamp():
             self.header_end = 0
 
     def readRamps(self):
+        '''
+        Reads binary data contained in the file
+        Populates the attribute Ramp with it
+        '''
         file = open(self.file_name, 'rb')
         for i in range(len(self.headerParameters['Data offset'])):
             self.Ramp.append({
@@ -108,6 +118,9 @@ class NanoscopeRamp():
             self.Ramp[i]['RawX'] *= self.headerParameters['Sens. Zsens:']
 
     def test1(self):
+        '''
+        Method used for testing
+        '''
         print(self.headerParameters['Sens. Zsens:'])
         print(self.headerParameters['Data offset'])
         print(self.headerParameters['Data length:'])
@@ -117,25 +130,30 @@ class NanoscopeRamp():
         print(self.headerParameters['4:Image Data:'])
         print(self.headerParameters['Bytes/pixel'])
         print(self.headerParameters['@4:Z scale'])
-        # print(self.Ramp[0]['RawX'])
         plt.plot(self.Ramp[0]['RawX'], self.Ramp[0]['RawY'][0][:])
         plt.plot(self.Ramp[0]['RawX'], self.Ramp[0]['RawY'][1][:])
         plt.show()
 
 ###############################################################################
 # Run if this is the main program
+# Useful for testing
 ###############################################################################
 if __name__ == "__main__":
-    # Load parsed input force volume file and output database
+    # Load parsed input force ramp file
     ap = argparse.ArgumentParser()
     ap.add_argument("-i", "--input", required=True,
                     help="path to the Nanoscope file")
     args = vars(ap.parse_args())
 
-    # Create an object of the NanoscopeForceVolumeFileToDataBase class
+    # Create an object of the NanoscopeRamp class
+    # parsing one file
     rampObject = NanoscopeRamp(args['input'])
+
+    # Reads the header of the file
     rampObject.readHeader()
-    # rampObject.searchForParameters()
+
+    # Reads numerical (binary) data from the file
     rampObject.readRamps()
 
+    # Calls the test1 method, for testing
     rampObject.test1()

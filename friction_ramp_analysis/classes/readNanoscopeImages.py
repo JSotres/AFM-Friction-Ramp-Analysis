@@ -15,60 +15,43 @@ class NanoscopeImage():
     Class that open and read Nanoscope Image Files.
     
     Attributes:
-        file_name: Name of the Nanoscope Force Volume File
-        database_name: Name of the database.
-        header_end: For checking whether the end of the Force Volume
+        file_name: Name of the Nanoscope File
+        header_end: For checking whether the end of the
                     file header has been reached.
-        eof: For checking whether the end of the Force Volume file
+        eof: For checking whether the end of the file
              has been reached.
         headerParameters: Dictionary for parameters of relevance within
-                          the Force Volume file header.
-        *** Attributes specific for the Force Volume Measurement ***
-        numberOfMapRows: Number of rows (fast axis) in the Force
-                         Volume measurement.
-        numberOfMapColumns: Number of columns (slow axis) in the Force
-                            Volume measurement.
-        mapLength: Lateral dimension (in nm) of the scanned area.
-        rampLength: Ramped distance (in nm).
-        numberOfRampPoints: number of points in each ramp.
-        scanIncrement: distance between ramp points.
-        pixelLengthColumn: Lateral dimension of a pixel in the slow axis.
-        pixelLengthRow: Lateral dimension of a pixel in the fast axis.
-        *** Numpy arrays where the data read from the FV file are stored ***
-        FVDataArray: For storing FV data.
-        topographyArray: For storing topography(height) data.
-        *** Connector anc cursor for sqlite ***
-        connector
-        cursor
+                          the file header.
+
+        Image[idx][Channel]: Image Data, where idx refers to the
+        index of the image (in case multiple images are loaded) and
+        Channel to the type of image
+
     Methods:
         __init__()
         readHeader()
         searchForParameters()
         searchForHeaderEnd()
         headerToParameters()
-        readTopography()
-        readFV()
-        connectToDataBase()
-        checkTableExists()
-        closeDataBaseConnection()
-        createTables()
-        populateTables()
-        testFunction()
+        readImages()
+        getChannel()
+        getChannelIndex()
+        flattenImage()
+        equalizeTopImage()
+        equalizeImage()
     '''
 
     def __init__(self, file_name):
         '''
-        Initializes an object of the class NanoscopeForceVolumeFiles,
-        uses it for reading the data in the parsed Force Volume file
-        and saves it in a sqlite database.
+        Initializes an object of the class NanoscopeImage,
+        uses it for reading the data in the parsed AFM file
         Input parameters:
-        file_name: name of the Force Volume file.
-        database_name: name of the sqlite database
+        file_name: name of the AFM file
         '''
 
         # We initialize the attribute headerParameters, a dictionary
         # with keys corresponding to strings that identify the lines
-        # in the Force Volume file header with relevant information
+        # in the file header with relevant information
         self.headerParameters = {'Data offset':[], 'Data length':[],
         						'Samps/line':[], 'Number of lines':[],
         						'Scan Size':[], 'Line Direction':[],
@@ -82,14 +65,14 @@ class NanoscopeImage():
         self.header_end = 0
         self.eof = 0
 
-        # Name of the Force Volume file
+        # Name of the file
         self.file_name = file_name
 
         self.Image = []
         
     def readHeader(self):
         '''
-        Reads the header of the Force Volume File file_name
+        Reads the header of the Nanoscope file
         '''
         file = open(self.file_name, 'r', encoding='cp1252')
 
@@ -236,6 +219,10 @@ class NanoscopeImage():
 
         self.Image[idx]['Processed Image Data'] = s
 
+    #########################################
+    # Functions for testing
+    #########################################
+
     def test1(self):
     	fig, ax = plt.subplots()
     	ax.cla()
@@ -283,26 +270,25 @@ class NanoscopeImage():
 
 ###############################################################################
 # Run if this is the main program
+# Used for testing
 ###############################################################################
 if __name__ == "__main__":
-    # Load parsed input force volume file and output database
+
+    # Load parsed input Nanoscope file
     ap = argparse.ArgumentParser()
     ap.add_argument("-i", "--input", required=True,
                     help="path to the Nanoscope file")
     args = vars(ap.parse_args())
 
-    # Create an object of the NanoscopeForceVolumeFileToDataBase class
+    # Create an object of the NanoscopeImage class
     imageObject = NanoscopeImage(args['input'])
 
     # Reads the header of file_name, and populates
     # the headerParameters dictionary
     imageObject.readHeader()
+
+    # Read data from the file
     imageObject.readImages()
-    #imageObject.flattenImage(0)
-    #imageObject.equalizeTopImage(0,99)
-    #imageObject.test2()
     
-    #imageObject.test1()
-    #imageObject.test3()
-    #print(imageObject.headerParameters)
+    # Calls a method for testing
     imageObject.test5()
