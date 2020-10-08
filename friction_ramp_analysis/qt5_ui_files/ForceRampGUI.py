@@ -57,9 +57,9 @@ class Ui_ForceRampGUI(object):
         self.pushButtonSendVi = QtWidgets.QPushButton(self.centralwidget)
         self.pushButtonSendVi.setObjectName("pushButtonSendVi")
         self.horizontalLayout.addWidget(self.pushButtonSendVi)
-        self.pushButtonSendVi_2 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButtonSendVi_2.setObjectName("pushButtonSendVi_2")
-        self.horizontalLayout.addWidget(self.pushButtonSendVi_2)
+        self.pushButtonSendVf = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButtonSendVf.setObjectName("pushButtonSendVf")
+        self.horizontalLayout.addWidget(self.pushButtonSendVf)
         self.verticalLayout_2.addLayout(self.horizontalLayout)
         self.horizontalLayout_2.addLayout(self.verticalLayout_2)
         self.gridLayout.addLayout(self.horizontalLayout_2, 1, 1, 1, 2)
@@ -89,6 +89,6 @@ class Ui_ForceRampGUI(object):
         self.radioButtonBoth.setText(_translate("ForceRampGUI", "Both"))
         self.pushButtonSendVi.setText(_translate("ForceRampGUI", "Send\n"
 "to Vi"))
-        self.pushButtonSendVi_2.setText(_translate("ForceRampGUI", "Send\n"
+        self.pushButtonSendVf.setText(_translate("ForceRampGUI", "Send\n"
 "to Vf"))
-from mplwidget1plot import mplwidget1plot
+from .mplwidget1plot import mplwidget1plot

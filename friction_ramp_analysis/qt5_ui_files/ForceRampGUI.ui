@@ -118,7 +118,7 @@ to Vi</string>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButtonSendVi_2">
+           <widget class="QPushButton" name="pushButtonSendVf">
             <property name="text">
              <string>Send
 to Vf</string>
