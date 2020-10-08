@@ -142,7 +142,6 @@ class frictionRampGUI(QMainWindow):
 			self.update_graph()
 
 	def showNextRow(self):
-		#print(type(self.Files[self.currentFileIndex]))
 		if self.currentRow < self.Files[self.currentFileIndex].Image[0]['Rows']-1:
 			self.currentRow += 1
 			self.ui.lineEditRowNo.setText(str(self.currentRow))
@@ -169,9 +168,14 @@ class frictionRampGUI(QMainWindow):
 		finalV = float(self.ui.lineEditFinalV.text())
 		
 		delta = (finalV-initV)/(self.numberOfFiles-1)
+		print(delta)
 
 		for i in range(self.numberOfFiles):
 			self.loadForce[i] = (self.rawSetPoints[i] - (initV+i*delta)) * vertSens * normConst
+			print('-----')
+			print(initV+i*delta)
+			print(self.rawSetPoints[i])
+			print(self.loadForce[i])
 
 		self.frictionRampN = self.frictionRampV * torsConst / (latSens * tipHeight)
 
