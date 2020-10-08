@@ -4,7 +4,7 @@ Main function for the Friction Ramp Analysis Software
 
 import sys
 from PyQt5.QtWidgets import QApplication
-from .classes.definitionClassFrictionRampGUI import (
+from .classes.callFrictionRampGUI import (
         frictionRampGUI)
 
 
