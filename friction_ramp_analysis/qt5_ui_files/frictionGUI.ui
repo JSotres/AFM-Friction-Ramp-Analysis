@@ -1229,8 +1229,15 @@
     </widget>
     <addaction name="menuFriction_Ramp"/>
    </widget>
+   <widget class="QMenu" name="menuAnalysis">
+    <property name="title">
+     <string>Analysis</string>
+    </property>
+    <addaction name="actionOffsetFromFZ"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuExport"/>
+   <addaction name="menuAnalysis"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionLoadImages">
@@ -1251,6 +1258,11 @@
   <action name="actionCalibrated">
    <property name="text">
     <string>Calibrated</string>
+   </property>
+  </action>
+  <action name="actionOffsetFromFZ">
+   <property name="text">
+    <string>Offset from FZ</string>
    </property>
   </action>
  </widget>
