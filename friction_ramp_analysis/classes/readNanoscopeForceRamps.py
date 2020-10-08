@@ -95,7 +95,6 @@ class NanoscopeRamp():
             })
             file.seek(int(self.headerParameters['Data offset'][i]))
             s = file.read(int(self.headerParameters['Data length:'][i+1]))
-            print(len(s))
             s = np.frombuffer(
                 s,
                 dtype='<i{}'.format(2*self.headerParameters['Bytes/pixel'][i]),
