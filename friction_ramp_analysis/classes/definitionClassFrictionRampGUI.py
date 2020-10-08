@@ -1,6 +1,8 @@
 from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog
+from PyQt5 import QtCore
 import sys
 from .readNanoscopeImages import *
+from .callForceRampGUI import *
 import matplotlib.pyplot as plt
 from ..qt5_ui_files.frictionGUI import *
 from matplotlib.backends.backend_qt5agg import (NavigationToolbar2QT as NavigationToolbar)
@@ -26,7 +28,9 @@ class frictionRampGUI(QMainWindow):
 
 		self.ui.actionRaw.triggered.connect(self.exportRawFrictionRamp)
 		self.ui.actionCalibrated.triggered.connect(self.exportCalibratedFrictionRamp)
-		#self.ui.actionLoad_CSV.triggered.connect(self.loadCSV)
+
+		self.ui.actionOffsetFromFZ.triggered.connect(self.openForceRampGUI)
+
 		self.ui.pushButtonPrevImage.clicked.connect(self.showPreviousImage)
 		self.ui.pushButtonNextImage.clicked.connect(self.showNextImage)
 		self.ui.pushButtonPrevRow.clicked.connect(self.showPreviousRow)
@@ -100,6 +104,20 @@ class frictionRampGUI(QMainWindow):
 		filter_mask = "All Files (*)"
 		name = QFileDialog.getSaveFileName(self, caption, directory, filter_mask)
 		np.savetxt(name[0], np.transpose([self.loadForce,self.frictionRampN]), delimiter="\t")
+
+	def openForceRampGUI(self):
+		self.ForceRampGUI = forceRampGUI()
+		self.ForceRampGUI.signal1.connect(self.slotVi)
+		self.ForceRampGUI.signal2.connect(self.slotVf)
+		self.ForceRampGUI.show()
+
+	QtCore.pyqtSlot(str)
+	def slotVi(self, addr):
+		self.ui.lineEditInitV.setText(str(addr))
+
+	QtCore.pyqtSlot(str)
+	def slotVf(self, addr):
+		self.ui.lineEditFinalV.setText(str(addr))
 
 	def showPreviousImage(self):
 		if self.currentFileIndex > 0:

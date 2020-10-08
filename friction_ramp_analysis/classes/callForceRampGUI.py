@@ -14,7 +14,7 @@ class forceRampGUI(QMainWindow):
 
 	def __init__(self):
 		super().__init__()
-		self.ui = Ui_GUI3()
+		self.ui = Ui_ForceRampGUI()
 		self.ui.setupUi(self)
 		self.ui.pushButtonSendVi.clicked.connect(self.sendVi)
 		self.ui.pushButtonSendVf.clicked.connect(self.sendVf)
