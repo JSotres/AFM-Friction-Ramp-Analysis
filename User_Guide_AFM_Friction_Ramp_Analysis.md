@@ -18,3 +18,12 @@ At present it has only been tested for images obtained with the Nanoscope v9 sof
 	* matplotlib 3.3.2
 	* numpy 1.19.2 
 	* scipy 1.5.2
+3. From the main folder run:
+	```python
+	python -m friction_ramp_analysis
+	```
+	Thiw will open the following graphical Interface:
+	![Main Window](UserGuideImages/MainWindow.png)
+
+## Loading and looking at data
+After initializing the application, go to the menu bar and in File click on Load Images. Then select a series of consecutive AFM images obtained while varying the set point.
