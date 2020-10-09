@@ -26,4 +26,6 @@ At present it has only been tested for images obtained with the Nanoscope v9 sof
 	![Main Window](UserGuideImages/MainWindow.png)
 
 ## Loading and looking at data
-After initializing the application, go to the menu bar and in File click on Load Images. Then select a series of consecutive AFM images obtained while varying the set point.
+After initializing the application, go to the menu bar and in File click on Load Images. Then select a series of consecutive AFM images obtained while varying the set point. You will then get something like:
+![Main Window](UserGuideImages/MainWindowWithData.png)
+
