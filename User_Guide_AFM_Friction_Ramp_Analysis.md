@@ -29,3 +29,15 @@ At present it has only been tested for images obtained with the Nanoscope v9 sof
 After initializing the application, go to the menu bar and in File click on Load Images. Then select a series of consecutive AFM images obtained while varying the set point. You will then get something like:
 ![Main Window](UserGuideImages/MainWindowWithData.png)
 
+In the first row of the plot area, the topography channel (in case it was registered) and corresponding profile are shown.
+
+The trace and retrace friction channels iare shown in the second and third row of the first column of the plot area.
+
+The trace and retrace profiles of the raw friction signal corresponding to the selected row are shown in the second row second column of the plot area.
+
+The friction vs load plot is shown in the bottom right corner of the plot area.
+
+In the upper right section of the main window it is possible to change the visualized image and row. It is also possible to select a range of rows and columns to perform further analysys.
+
+## Data Analysis
+
