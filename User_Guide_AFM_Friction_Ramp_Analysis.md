@@ -7,7 +7,8 @@ At present it has only been tested for images obtained with the Nanoscope v9 sof
 ## Quick Start
 
 1. Clone/fetch/download the repository.
-2. A venv virtual environment is provided with the repository. To activate it, just go to the main folder and type:
+2. A virtualenv virtual environment is provided with the repository. To activate it, just go to the main folder and type:
 ```python
 source env/bin/activate
 ```
+If you do not have virtualenv, just follow these [instructions](https://virtualenv.pypa.io/en/latest/installation.html).
