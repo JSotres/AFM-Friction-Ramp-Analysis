@@ -42,7 +42,17 @@ In the upper right section of the main window it is possible to change the visua
 ## Data Analysis
 In the bottom right corner of the main window one can enter the parameters needed for transforming into forces the raw lateral and vertical photodetector signals. Have a look at this [paper](https://pubs.acs.org/doi/full/10.1021/la201673r) and its referenced for the underlying theory.
 
-In the same section it is also possible to enter the vertical photodetector signals corresponding to the cantilever far from the sample at the beginning and end of the experiment. This allows correcting drifts in this signal during the time of the experiment. These quantities can be entered manually, or obtained from force curves. For this latter approach, in the menu bar go to Analysis->. The following window will show up:
+In the same section it is also possible to enter the vertical photodetector signals corresponding to the cantilever far from the sample at the beginning and end of the experiment. This allows correcting drifts in this signal during the time of the experiment. These quantities can be entered manually, or obtained from force curves. For this latter approach, in the menu bar go to Analysis->Offset from FZ. The following window will show up:
 ![FZ GUI](UserGuideImages/FZ1.png)
+
+Zoom in the region corresponding to the free non-interacting cantilever, select whether to calculate the offset from the forward curve, from the backward curve, or from the average of both:
+![FZ GUI](UserGuideImages/FZ2.png)
+
+Press the Vertical Offset Button. The press Send to Vi or Send to Vf buttons to send to the Main Window the calculated offset as the one corresponding to the start or to the end of the experiment.
+
+Finally, in the Main Window press Calibrate to get the friction vs load plot in force units.
+
+## Export Data
+In the Menu Bar, go to Export->Friction Ramp, and there select between Raw and Calibrated. This will allow you to export the (raw or calibrated) friction vs load plot in 2 columns ASCII file.
 
 
