@@ -42,9 +42,6 @@ class frictionRampGUI(QMainWindow):
 
 		MplToolbar = NavigationToolbar(self.ui.mplWidget.canvas, self)
 		self.addToolBar(MplToolbar)
-		#self.ui.saveImagePushButton.clicked.connect(self.saveImage)
-		#self.show()
-		#uic.loadUi('simpleGUIMatplotLib.ui', self)
 		self.Files = []
 		self.frictionRampV = []
 		self.frictionRampN = None
@@ -63,23 +60,22 @@ class frictionRampGUI(QMainWindow):
 		filter_mask = "All Files (*)"
 		filenames = QFileDialog.getOpenFileNames(
 		    self, caption, directory, filter_mask)[0]
-		# Initially, and empty list (spectrum) is created
-		# Below, each component of this list will correspond to an instance
-		# of the vnaSpectrum
+		# Initially, and empty list that will contain the name of the
+                # loaded files is created
 		self.fileList = []
 		self.numberOfFiles = len(filenames)
 		self.currentFileIndex = 0
 		self.currentRow = 0
 		for i in range(self.numberOfFiles):
-		    #a = NanoscopeImage(filenames[i])
-		    #x = filenames[i].split('/')
 		    self.fileList.append(filenames[i].split('/')[-1])
 		    self.Files.append(NanoscopeImage(filenames[i]))
 		    self.Files[i].readHeader()
 		    self.Files[i].readImages()
-		    self.Files[i].flattenImage('Height','Retrace', 3)
-		    self.Files[i].equalizeImage('Friction','Trace',3)
-		    self.Files[i].equalizeImage('Friction','Retrace',3)
+		    self.Files[i].flattenImage('Height','Main','Retrace', 3)
+		    self.Files[i].equalizeImage('Friction','Main','Trace',3)
+		    self.Files[i].equalizeImage('Friction','Main','Retrace',3)
+		    self.Files[i].equalizeImage('Friction','Interleave','Trace',3)
+		    self.Files[i].equalizeImage('Friction','Interleave','Retrace',3)
 		    self.rawSetPoints.append(self.Files[i].Image[0]['Set Point'])
 		self.rawSetPoints = np.asarray(self.rawSetPoints)
 		self.loadForce = np.zeros(self.numberOfFiles)
@@ -167,8 +163,8 @@ class frictionRampGUI(QMainWindow):
 		x_min = int(self.ui.lineEditMinCol.text())
 		x_max = int(self.ui.lineEditMaxCol.text()) + 1
 		for i in range(self.numberOfFiles):
-			frictionTrace = self.Files[i].getChannel('Friction','Trace')
-			frictionRetrace = self.Files[i].getChannel('Friction','Retrace')
+			frictionTrace = self.Files[i].getChannel('Friction','Main','Trace')
+			frictionRetrace = self.Files[i].getChannel('Friction','Main','Retrace')
 			self.frictionRampV.append(np.mean((frictionTrace['Image Data'][:,x_min:x_max] - frictionRetrace['Image Data'][:,x_min:x_max])/2))
 		self.frictionRampV = np.asarray(self.frictionRampV)
 
@@ -212,7 +208,7 @@ class frictionRampGUI(QMainWindow):
 		
 		self.ui.mplWidget.canvas.axes1.clear()
 		self.ui.mplWidget.canvas.axes1.set_axis_off()
-		topography = self.Files[self.currentFileIndex].getChannel('Height','Retrace')
+		topography = self.Files[self.currentFileIndex].getChannel('Height','Main','Retrace')
 		self.ui.mplWidget.canvas.axes1.imshow(topography['Processed Image Data'], cmap='gray', aspect='auto')
 		self.ui.mplWidget.canvas.axes1.axhline(y=self.currentRow,xmin=x_min,xmax=x_max,color='red')
 		self.ui.mplWidget.canvas.axes1.set_title('Height')
@@ -226,7 +222,7 @@ class frictionRampGUI(QMainWindow):
 
 		self.ui.mplWidget.canvas.axes3.clear()
 		self.ui.mplWidget.canvas.axes3.set_axis_off()
-		frictionTrace = self.Files[self.currentFileIndex].getChannel('Friction','Trace')
+		frictionTrace = self.Files[self.currentFileIndex].getChannel('Friction','Main','Trace')
 		self.ui.mplWidget.canvas.axes3.imshow(frictionTrace['Processed Image Data'], cmap='gray', aspect='auto')
 		self.ui.mplWidget.canvas.axes3.axhline(y=self.currentRow,xmin=x_min,xmax=x_max,color='red')
 		self.ui.mplWidget.canvas.axes3.set_title('Friction Trace')
@@ -234,7 +230,7 @@ class frictionRampGUI(QMainWindow):
 
 		self.ui.mplWidget.canvas.axes5.clear()
 		self.ui.mplWidget.canvas.axes5.set_axis_off()
-		frictionRetrace = self.Files[self.currentFileIndex].getChannel('Friction','Retrace')
+		frictionRetrace = self.Files[self.currentFileIndex].getChannel('Friction','Main','Retrace')
 		self.ui.mplWidget.canvas.axes5.imshow(frictionRetrace['Processed Image Data'], cmap='gray', aspect='auto')
 		self.ui.mplWidget.canvas.axes5.axhline(y=self.currentRow,xmin=x_min,xmax=x_max,color='red')
 		self.ui.mplWidget.canvas.axes5.set_title('Friction Retrace')

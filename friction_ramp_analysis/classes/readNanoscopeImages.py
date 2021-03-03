@@ -53,12 +53,13 @@ class NanoscopeImage():
         # with keys corresponding to strings that identify the lines
         # in the file header with relevant information
         self.headerParameters = {'Data offset':[], 'Data length':[],
-        						'Samps/line':[], 'Number of lines':[],
-        						'Scan Size':[], 'Line Direction':[],
-        						'Valid data len X':[], 'Valid data len Y':[],
-        						'2:Image Data':[], 'Z magnify':[],
-        						'@2:Z scale':[], '@Sens. Zsens':[],
-                                '@2:AFMSetDeflection':[], 'Bytes/pixel':[]}
+                                 'Samps/line':[], 'Number of lines':[],
+                                 'Scan Size':[], 'Line Direction':[],
+                                 'Valid data len X':[], 'Valid data len Y':[],
+                                 ':Image Data':[], 'Z magnify':[],
+                                 '@2:Z scale':[], '@Sens. Zsens':[],
+                                 '@2:AFMSetDeflection':[], 'Bytes/pixel':[],
+                                 'Scan Line:':[]}
 
         # At the beginning we are not at the end of the header
         # or at the endof the file
@@ -102,26 +103,30 @@ class NanoscopeImage():
             if re.search(re.escape(key), _line):
                 # print(_line)
                 if key == 'Line Direction':
-                	searchString = re.findall(r'\w+$', _line)
-                	searchString = searchString[0]
-                	self.headerParameters[key].append(searchString)
-                elif key == '2:Image Data':
-                	searchString = re.split(r'"', _line)
-                	searchString = searchString[-2]
-                	self.headerParameters[key].append(searchString)
+                    searchString = re.findall(r'\w+$', _line)
+                    searchString = searchString[0]
+                    self.headerParameters[key].append(searchString)
+                elif key == 'Scan Line:':
+                    searchString = re.findall(r'\w+$', _line)
+                    searchString = searchString[0]
+                    self.headerParameters[key].append(searchString)
+                elif key == ':Image Data':
+                    searchString = re.split(r'"', _line)
+                    searchString = searchString[-2]
+                    self.headerParameters[key].append(searchString)
                 elif key == 'Bytes/pixel':
-                	numbers = re.findall(r'\d+$', _line)
-                	self.headerParameters[key].append(int(numbers[0]))
+                    numbers = re.findall(r'\d+$', _line)
+                    self.headerParameters[key].append(int(numbers[0]))
                 else:
-	                numbers = re.findall(r'-?\d+\.?\d+', _line)
-	                # If _line contains the strings 'LSB' or '@', only populate
-	                # the key value with the last number from _line. If not,
-	                # populate it with all numbers.
-	                if re.search(r'LSB', _line) or re.search(r'@', _line):
-	                    self.headerParameters[key].append(float(numbers[-1]))
-	                else:
-	                    for number in numbers:
-	                        self.headerParameters[key].append(float(number))
+                    numbers = re.findall(r'-?\d+\.?\d+', _line)
+                    # If _line contains the strings 'LSB' or '@', only populate
+	            # the key value with the last number from _line. If not,
+	            # populate it with all numbers.
+                    if re.search(r'LSB', _line) or re.search(r'@', _line):
+                        self.headerParameters[key].append(float(numbers[-1]))
+                    else:
+                        for number in numbers:
+                            self.headerParameters[key].append(float(number))
 
     def searchForHeaderEnd(self, _line, _string):
         '''
@@ -136,7 +141,8 @@ class NanoscopeImage():
         file = open(self.file_name, 'rb')
         for i in range(len(self.headerParameters['Data offset'])):
             self.Image.append({
-                'Channel': self.headerParameters['2:Image Data'][i],
+                'Channel': self.headerParameters[':Image Data'][i],
+                'Scan Line': self.headerParameters['Scan Line:'][i],
                 'Line Direction': self.headerParameters['Line Direction'][i],
                 'Image Data': np.empty([
                     int(self.headerParameters['Samps/line'][i]),
@@ -167,20 +173,20 @@ class NanoscopeImage():
             self.Image[i]['Processed Image Data'] = s
         file.close()
 
-    def getChannel(self, channel, direction):
+    def getChannel(self, channel, scanLine, direction):
         image = next(
-            item for item in self.Image if item["Channel"] == channel and item["Line Direction"] == direction
+            item for item in self.Image if item["Channel"] == channel and item["Scan Line"] == scanLine and item["Line Direction"] == direction
         )
         return image
 
-    def getChannelIndex(self, channel, direction):
+    def getChannelIndex(self, channel, scanLine, direction):
         index = next(
-            idx for idx in range(len(self.Image)) if self.Image[idx]["Channel"] == channel and self.Image[idx]["Line Direction"] == direction
+            idx for idx in range(len(self.Image)) if self.Image[idx]["Channel"] == channel and self.Image[idx]["Scan Line"] == scanLine and self.Image[idx]["Line Direction"] == direction
         )
         return index
 
-    def flattenImage(self, channel, direction, jdx):
-        idx = self.getChannelIndex(channel,direction)
+    def flattenImage(self, channel, scanLine, direction, jdx):
+        idx = self.getChannelIndex(channel,scanLine,direction)
         s = self.Image[idx]['Processed Image Data'].copy()
         if jdx == 6 :
             def func(x, a, b , c, d, e, f, g):
@@ -200,15 +206,15 @@ class NanoscopeImage():
 
         self.Image[idx]['Processed Image Data'] = s
 
-    def equalizeTopImage(self, channel, direction, percentile):
-        idx = self.getChannelIndex(channel,direction)
+    def equalizeTopImage(self, channel, scanLine, direction, percentile):
+        idx = self.getChannelIndex(channel,scanLine,direction)
         l = np.percentile(self.Image[0]['Processed Image Data'], percentile)
         s = self.Image[idx]['Processed Image Data'].copy()
         s[s>l]=l
         self.Image[idx]['Processed Image Data'] = s
 
-    def equalizeImage(self, channel, direction, width):
-        idx = self.getChannelIndex(channel,direction)
+    def equalizeImage(self, channel, scanLine, direction, width):
+        idx = self.getChannelIndex(channel,scanLine,direction)
         l = np.std(self.Image[idx]['Processed Image Data'])
         mp = np.mean(self.Image[idx]['Processed Image Data'])
         
