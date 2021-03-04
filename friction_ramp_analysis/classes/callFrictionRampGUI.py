@@ -121,7 +121,7 @@ class frictionRampGUI(QMainWindow):
         directory = os.getcwd()
         filter_mask = "All Files (*)"
         name = QFileDialog.getSaveFileName(self, caption, directory, filter_mask)
-        np.savetxt(name[0], np.transpose([self.loadForce,self.frictionRampN]), delimiter="\t")
+        np.savetxt(name[0], np.transpose([self.loadForce,self.frictionRampV*self.frictionCalibrationConstant]), delimiter="\t")
 
     def openForceRampGUI(self):
         self.ForceRampGUI = forceRampGUI()
