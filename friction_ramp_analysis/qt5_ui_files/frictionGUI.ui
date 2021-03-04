@@ -1224,10 +1224,18 @@
      <property name="title">
       <string>Friction Ramp</string>
      </property>
-     <addaction name="actionRaw"/>
-     <addaction name="actionCalibrated"/>
+     <addaction name="actionExportMainRaw"/>
+     <addaction name="actionExportMainCalibrated"/>
+    </widget>
+    <widget class="QMenu" name="menuInterleave_Ramp">
+     <property name="title">
+      <string>Interleave Ramp</string>
+     </property>
+     <addaction name="actionExportInterleaveRaw"/>
+     <addaction name="actionExportInterleaveCalibrated"/>
     </widget>
     <addaction name="menuFriction_Ramp"/>
+    <addaction name="menuInterleave_Ramp"/>
    </widget>
    <widget class="QMenu" name="menuAnalysis">
     <property name="title">
@@ -1266,12 +1274,12 @@
     <string>Close</string>
    </property>
   </action>
-  <action name="actionRaw">
+  <action name="actionExportMainRaw">
    <property name="text">
     <string>Raw</string>
    </property>
   </action>
-  <action name="actionCalibrated">
+  <action name="actionExportMainCalibrated">
    <property name="text">
     <string>Calibrated</string>
    </property>
@@ -1308,6 +1316,16 @@
   <action name="actionViewCalibratedData">
    <property name="text">
     <string>Calibrated Data</string>
+   </property>
+  </action>
+  <action name="actionExportInterleaveRaw">
+   <property name="text">
+    <string>Raw</string>
+   </property>
+  </action>
+  <action name="actionExportInterleaveCalibrated">
+   <property name="text">
+    <string>Calibrated</string>
    </property>
   </action>
  </widget>

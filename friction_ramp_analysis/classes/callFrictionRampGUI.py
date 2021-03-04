@@ -15,14 +15,15 @@ class frictionRampGUI(QMainWindow):
         super().__init__()
         #Load the UI
         self.ui = Ui_FrictionGUI()
-        #self.setMouseTracking(True)
         self.ui.setupUi(self)
         self.ui.actionLoadImages.triggered.connect(self.openfiledialog)
         self.ui.actionClose.triggered.connect(QApplication.instance().quit)
         self.ui.actionViewRawData.triggered.connect(self.viewRawData)
         self.ui.actionViewCalibratedData.triggered.connect(self.viewCalibratedData)
-        self.ui.actionRaw.triggered.connect(self.exportRawFrictionRamp)
-        self.ui.actionCalibrated.triggered.connect(self.exportCalibratedFrictionRamp)
+        self.ui.actionExportMainRaw.triggered.connect(self.exportRawMainFrictionRamp)
+        self.ui.actionExportMainCalibrated.triggered.connect(self.exportCalibratedMainFrictionRamp)
+        self.ui.actionExportInterleaveRaw.triggered.connect(self.exportRawInterleaveFrictionRamp)
+        self.ui.actionExportInterleaveCalibrated.triggered.connect(self.exportCalibratedInterleaveFrictionRamp)
         self.ui.actionOffsetFromFZ.triggered.connect(self.openForceRampGUI)
         self.ui.actionMainScan.triggered.connect(self.selectMainScan)
         self.ui.actionInterleaveScan.triggered.connect(self.selectInterleaveScan)
@@ -41,10 +42,8 @@ class frictionRampGUI(QMainWindow):
         self.Files = []
         self.frictionRampV_mean = []
         self.frictionRampV_std = []
-        #self.frictionRampN = None
         self.frictionRampV_Interleave_mean = []
         self.frictionRampV_Interleave_std = []
-        #self.frictionRampN_Interleave = None
         self.frictionCalibrationConstant = 0
         self.currentFileIndex = 0
         self.currentRow = 0
@@ -111,19 +110,33 @@ class frictionRampGUI(QMainWindow):
             self.calculateFriction()
             self.update_graph()
 
-    def exportRawFrictionRamp(self):
+    def exportRawMainFrictionRamp(self):
         caption = "Save File"
         directory = os.getcwd()
         filter_mask = "All Files (*)"
         name = QFileDialog.getSaveFileName(self, caption, directory, filter_mask)
         np.savetxt(name[0], np.transpose([self.rawSetPoints,self.frictionRampV_mean, self.frictionRampV_std]), delimiter="\t")
 
-    def exportCalibratedFrictionRamp(self):
+    def exportCalibratedMainFrictionRamp(self):
         caption = "Save File"
         directory = os.getcwd()
         filter_mask = "All Files (*)"
         name = QFileDialog.getSaveFileName(self, caption, directory, filter_mask)
         np.savetxt(name[0], np.transpose([self.loadForce,self.frictionRampV_mean*self.frictionCalibrationConstant,self.frictionRampV_std*self.frictionCalibrationConstant]), delimiter="\t")
+
+    def exportRawInterleaveFrictionRamp(self):
+        caption = "Save File"
+        directory = os.getcwd()
+        filter_mask = "All Files (*)"
+        name = QFileDialog.getSaveFileName(self, caption, directory, filter_mask)
+        np.savetxt(name[0], np.transpose([self.rawSetPoints,self.frictionRampV_Interleave_mean, self.frictionRampV_Interleave_std]), delimiter="\t")
+
+    def exportCalibratedInterleaveFrictionRamp(self):
+        caption = "Save File"
+        directory = os.getcwd()
+        filter_mask = "All Files (*)"
+        name = QFileDialog.getSaveFileName(self, caption, directory, filter_mask)
+        np.savetxt(name[0], np.transpose([self.loadForce,self.frictionRampV_Interleave_mean*self.frictionCalibrationConstant,self.frictionRampV_Interleave_std*self.frictionCalibrationConstant]), delimiter="\t")
 
     def openForceRampGUI(self):
         self.ForceRampGUI = forceRampGUI()
@@ -202,19 +215,14 @@ class frictionRampGUI(QMainWindow):
             for y in range(y_min,y_max):
                 y_err.append((np.std(frictionTrace['Image Data'][y,x_min:x_max])+np.std(frictionRetrace['Image Data'][y,x_min:x_max]))/2)
             y_err = np.asarray(y_err)
-            #self.frictionRampV_std.append((np.std(frictionTrace['Image Data'][y,x_min:x_max])+np.std(frictionRetrace['Image Data'][y,x_min:x_max]))/2)
             self.frictionRampV_std.append(np.mean(y_err))
-            print(np.mean(frictionTrace['Image Data'][:,x_min:x_max]))
-            print(np.std(frictionTrace['Image Data'][:,x_min:x_max]))
-            print(np.mean(frictionRetrace['Image Data'][:,x_min:x_max]))
-            print(np.std(frictionRetrace['Image Data'][:,x_min:x_max]))
             if self.interleaveRegistered == True:
                 frictionTraceInterleave = self.Files[i].getChannel('Friction','Interleave','Trace')
                 frictionRetraceInterleave = self.Files[i].getChannel('Friction','Interleave','Retrace')
                 self.frictionRampV_Interleave_mean.append(np.mean((frictionTraceInterleave['Image Data'][:,x_min:x_max] - frictionRetraceInterleave['Image Data'][:,x_min:x_max])/2))
                 y_err = []
                 for y in range(y_min,y_max):
-                    y_err.append((np.std(frictionTraceInterleave['Image Data'][:,x_min:x_max])+np.std(frictionRetraceInterleave['Image Data'][:,x_min:x_max]))/2)
+                    y_err.append((np.std(frictionTraceInterleave['Image Data'][y,x_min:x_max])+np.std(frictionRetraceInterleave['Image Data'][y,x_min:x_max]))/2)
                 y_err = np.asarray(y_err)
                 self.frictionRampV_Interleave_std.append(np.mean(y_err))
         self.frictionRampV_mean = np.asarray(self.frictionRampV_mean)
@@ -237,9 +245,6 @@ class frictionRampGUI(QMainWindow):
         for i in range(self.numberOfFiles):
             self.loadForce[i] = (self.rawSetPoints[i] - (initV+i*delta)) * vertSens * normConst
         self.frictionCalibrationConstant = torsConst / (latSens * tipHeight)
-        #self.frictionRampN = self.frictionRampV * torsConst / (latSens * tipHeight)
-        #if self.interleaveRegistered == True:
-            #self.frictionRampN_Interleave = self.frictionRampV_Interleave * torsConst / (latSens * tipHeight)
         self.dataCalibrated = True
         self.dataView = 'Calibrated'
         self.update_graph()
@@ -268,7 +273,6 @@ class frictionRampGUI(QMainWindow):
         self.ui.mplWidget.canvas.axes1.imshow(topography['Processed Image Data'], cmap='gray', aspect='auto')
         self.ui.mplWidget.canvas.axes1.axhline(y=self.currentRow,xmin=x_min,xmax=x_max,color='red')
         self.ui.mplWidget.canvas.axes1.set_title('Height')
-        #self.ui.mplWidget.canvas.draw()
 
         self.ui.mplWidget.canvas.axes2.clear()
         self.ui.mplWidget.canvas.axes2.plot(x_profile_full,topography['Processed Image Data'][self.currentRow,:],'--')
@@ -286,8 +290,6 @@ class frictionRampGUI(QMainWindow):
             self.ui.mplWidget.canvas.axes3.set_title('Friction Trace')
         self.ui.mplWidget.canvas.axes3.imshow(frictionTrace['Processed Image Data'], cmap='gray', aspect='auto')
         self.ui.mplWidget.canvas.axes3.axhline(y=self.currentRow,xmin=x_min,xmax=x_max,color='red')
-        
-        #self.ui.mplWidget.canvas.draw()
 
         self.ui.mplWidget.canvas.axes5.clear()
         self.ui.mplWidget.canvas.axes5.set_axis_off()
@@ -329,11 +331,11 @@ class frictionRampGUI(QMainWindow):
         if self.selectedScanMode == 'Interleave':
             self.ui.mplWidget.canvas.axes6.set_title('Friction Ramp Interleave')
             if self.dataView == 'Raw':
-                self.ui.mplWidget.canvas.axes6.errorbar(self.frictionRampV_Interleave_mean,yerr=self.frictionRampV_Interleave_std)
+                self.ui.mplWidget.canvas.axes6.errorbar(x=np.arange(self.frictionRampV_Interleave_mean.shape[0]),y=self.frictionRampV_Interleave_mean,yerr=self.frictionRampV_Interleave_std)
                 self.ui.mplWidget.canvas.axes6.plot(self.frictionRampV_Interleave_mean[self.currentFileIndex],'ro')
                 self.ui.mplWidget.canvas.axes6.set_ylabel('Friction Interleave(V)')
             elif self.dataView == 'Calibrated':
-                self.ui.mplWidget.canvas.axes6.errorbar(self.frictionRampV_Interleave_mean*self.frictionCalibrationConstant,yerr=self.frictionRampV_Interleave_std*self.frictionCalibrationConstant)
+                self.ui.mplWidget.canvas.axes6.errorbar(np.arange(self.frictionRampV_Interleave_mean.shape[0]),self.frictionRampV_Interleave_mean*self.frictionCalibrationConstant,yerr=self.frictionRampV_Interleave_std*self.frictionCalibrationConstant)
                 self.ui.mplWidget.canvas.axes6.plot(self.frictionRampV_Interleave_mean[self.currentFileIndex]*self.frictionCalibrationConstant,'ro')
                 self.ui.mplWidget.canvas.axes6.set_ylabel('Friction Interleave (N)')
         elif self.selectedScanMode == 'Main':
@@ -345,10 +347,7 @@ class frictionRampGUI(QMainWindow):
             elif self.dataView == 'Calibrated':
                 self.ui.mplWidget.canvas.axes6.errorbar(self.loadForce,self.frictionRampV_mean*self.frictionCalibrationConstant,yerr=self.frictionRampV_std*self.frictionCalibrationConstant)
                 self.ui.mplWidget.canvas.axes6.plot(self.loadForce[self.currentFileIndex],self.frictionRampV_mean[self.currentFileIndex]*self.frictionCalibrationConstant,'ro')
-                #self.ui.mplWidget.canvas.axes6.plot(self.loadForce,self.frictionRampN)
-                #self.ui.mplWidget.canvas.axes6.plot(self.loadForce[self.currentFileIndex],self.frictionRampN[self.currentFileIndex],'ro')
                 self.ui.mplWidget.canvas.axes6.set_ylabel('Friction (N)')
-                #self.frictionCalibrationConstant
 
         self.ui.mplWidget.canvas.figure.tight_layout()
         self.ui.mplWidget.canvas.draw()
