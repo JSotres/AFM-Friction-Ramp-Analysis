@@ -103,12 +103,12 @@ class frictionRampGUI(QMainWindow):
             except:
                 pass
             self.rawSetPoints.append(self.Files[i].Image[0]['Set Point'])
-            self.rawSetPoints = np.asarray(self.rawSetPoints)
-            self.loadForce = np.zeros(self.numberOfFiles)
-            self.ui.lineEditMaxRow.setText(str(self.Files[0].Image[0]['Rows']-1))
-            self.ui.lineEditMaxCol.setText(str(self.Files[0].Image[0]['Columns']-1))
-            self.calculateFriction()
-            self.update_graph()
+        self.rawSetPoints = np.asarray(self.rawSetPoints)
+        self.loadForce = np.zeros(self.numberOfFiles)
+        self.ui.lineEditMaxRow.setText(str(self.Files[0].Image[0]['Rows']-1))
+        self.ui.lineEditMaxCol.setText(str(self.Files[0].Image[0]['Columns']-1))
+        self.calculateFriction()
+        self.update_graph()
 
     def exportRawMainFrictionRamp(self):
         caption = "Save File"
