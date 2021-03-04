@@ -1235,9 +1235,17 @@
     </property>
     <addaction name="actionOffsetFromFZ"/>
    </widget>
+   <widget class="QMenu" name="menuScan_Type">
+    <property name="title">
+     <string>Scan Type</string>
+    </property>
+    <addaction name="actionMainScan"/>
+    <addaction name="actionInterleaveScan"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuExport"/>
    <addaction name="menuAnalysis"/>
+   <addaction name="menuScan_Type"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionLoadImages">
@@ -1263,6 +1271,25 @@
   <action name="actionOffsetFromFZ">
    <property name="text">
     <string>Offset from FZ</string>
+   </property>
+  </action>
+  <action name="actionMainScan">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Main</string>
+   </property>
+  </action>
+  <action name="actionInterleaveScan">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Interleave</string>
    </property>
   </action>
  </widget>

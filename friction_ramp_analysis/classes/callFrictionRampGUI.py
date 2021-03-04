@@ -22,6 +22,8 @@ class frictionRampGUI(QMainWindow):
         self.ui.actionRaw.triggered.connect(self.exportRawFrictionRamp)
         self.ui.actionCalibrated.triggered.connect(self.exportCalibratedFrictionRamp)
         self.ui.actionOffsetFromFZ.triggered.connect(self.openForceRampGUI)
+        self.ui.actionMainScan.triggered.connect(self.selectMainScan)
+        self.ui.actionInterleaveScan.triggered.connect(self.selectInterleaveScan)
         self.ui.pushButtonPrevImage.clicked.connect(self.showPreviousImage)
         self.ui.pushButtonNextImage.clicked.connect(self.showNextImage)
         self.ui.pushButtonPrevRow.clicked.connect(self.showPreviousRow)
@@ -37,6 +39,8 @@ class frictionRampGUI(QMainWindow):
         self.Files = []
         self.frictionRampV = []
         self.frictionRampN = None
+        self.frictionRampV_Interleave = []
+        self.frictionRampN_Interleave = None
         self.currentFileIndex = 0
         self.currentRow = 0
         self.numberOfFiles = 0
@@ -45,7 +49,19 @@ class frictionRampGUI(QMainWindow):
         self.loadForce = None
         self.dataCalibrated = 0
         self.interleaveRegistered = False
+        self.selectedScanMode = 'Main'
         self.show()
+
+    def selectMainScan(self):
+        self.selectedScanMode = 'Main'
+        self.ui.actionInterleaveScan.setChecked(False)
+        self.update_graph()
+
+    def selectInterleaveScan(self):
+        if self.interleaveRegistered == True:
+            self.selectedScanMode = 'Interleave'
+            self.ui.actionMainScan.setChecked(False)
+            self.update_graph()
 
     def openfiledialog(self):
         caption = "Open File"
@@ -156,13 +172,20 @@ class frictionRampGUI(QMainWindow):
 
     def calculateFriction(self):
         self.frictionRampV = []
+        self.frictionRampV_Interleave = []
         x_min = int(self.ui.lineEditMinCol.text())
         x_max = int(self.ui.lineEditMaxCol.text()) + 1
         for i in range(self.numberOfFiles):
             frictionTrace = self.Files[i].getChannel('Friction','Main','Trace')
             frictionRetrace = self.Files[i].getChannel('Friction','Main','Retrace')
             self.frictionRampV.append(np.mean((frictionTrace['Image Data'][:,x_min:x_max] - frictionRetrace['Image Data'][:,x_min:x_max])/2))
+            if self.interleaveRegistered == True:
+                frictionTraceInterleave = self.Files[i].getChannel('Friction','Interleave','Trace')
+                frictionRetraceInterleave = self.Files[i].getChannel('Friction','Interleave','Retrace')
+                self.frictionRampV_Interleave.append(np.mean((frictionTraceInterleave['Image Data'][:,x_min:x_max] - frictionRetraceInterleave['Image Data'][:,x_min:x_max])/2))
         self.frictionRampV = np.asarray(self.frictionRampV)
+        if self.interleaveRegistered == True:
+            self.frictionRampV_Interleave = np.asarray(self.frictionRampV_Interleave)
 
     def calibrate(self):
         self.calculateFriction()
@@ -178,6 +201,8 @@ class frictionRampGUI(QMainWindow):
         for i in range(self.numberOfFiles):
             self.loadForce[i] = (self.rawSetPoints[i] - (initV+i*delta)) * vertSens * normConst
         self.frictionRampN = self.frictionRampV * torsConst / (latSens * tipHeight)
+        if self.interleaveRegisterd == True:
+            self.frictionRampN_Interleave = self.frictionRampV_Interleave * torsConst / (latSens * tipHeight)
         self.dataCalibrated = 1
         self.update_graph()
 
@@ -196,6 +221,9 @@ class frictionRampGUI(QMainWindow):
         x_profile = np.arange(int(self.ui.lineEditMinCol.text()),int(self.ui.lineEditMaxCol.text())+1,1)
         x_profile_full = np.arange(0,self.Files[0].Image[0]['Columns'],1)
 
+        self.calculateFriction()
+        
+
         self.ui.mplWidget.canvas.axes1.clear()
         self.ui.mplWidget.canvas.axes1.set_axis_off()
         topography = self.Files[self.currentFileIndex].getChannel('Height','Main','Retrace')
@@ -212,38 +240,63 @@ class frictionRampGUI(QMainWindow):
 
         self.ui.mplWidget.canvas.axes3.clear()
         self.ui.mplWidget.canvas.axes3.set_axis_off()
-        frictionTrace = self.Files[self.currentFileIndex].getChannel('Friction','Main','Trace')
+        if self.selectedScanMode == 'Interleave':
+            frictionTrace = self.Files[self.currentFileIndex].getChannel('Friction','Interleave','Trace')
+            self.ui.mplWidget.canvas.axes3.set_title('Friction Interleave Trace')
+        elif self.selectedScanMode == 'Main':
+            frictionTrace = self.Files[self.currentFileIndex].getChannel('Friction','Main','Trace')
+            self.ui.mplWidget.canvas.axes3.set_title('Friction Trace')
         self.ui.mplWidget.canvas.axes3.imshow(frictionTrace['Processed Image Data'], cmap='gray', aspect='auto')
         self.ui.mplWidget.canvas.axes3.axhline(y=self.currentRow,xmin=x_min,xmax=x_max,color='red')
-        self.ui.mplWidget.canvas.axes3.set_title('Friction Trace')
+        
         #self.ui.mplWidget.canvas.draw()
 
         self.ui.mplWidget.canvas.axes5.clear()
         self.ui.mplWidget.canvas.axes5.set_axis_off()
-        frictionRetrace = self.Files[self.currentFileIndex].getChannel('Friction','Main','Retrace')
+        if self.selectedScanMode == 'Interleave':
+                frictionRetrace = self.Files[self.currentFileIndex].getChannel('Friction','Interleave','Retrace')
+                self.ui.mplWidget.canvas.axes5.set_title('Friction Interleave Retrace')
+        elif self.selectedScanMode == 'Main':
+            frictionRetrace = self.Files[self.currentFileIndex].getChannel('Friction','Main','Retrace')
+            self.ui.mplWidget.canvas.axes5.set_title('Friction Retrace')
         self.ui.mplWidget.canvas.axes5.imshow(frictionRetrace['Processed Image Data'], cmap='gray', aspect='auto')
         self.ui.mplWidget.canvas.axes5.axhline(y=self.currentRow,xmin=x_min,xmax=x_max,color='red')
-        self.ui.mplWidget.canvas.axes5.set_title('Friction Retrace')
+        
 
         self.ui.mplWidget.canvas.axes4.clear()
+        if self.selectedScanMode == 'Interleave':
+            self.ui.mplWidget.canvas.axes4.set_title('Friction Interleave Profile')
+            self.ui.mplWidget.canvas.axes4.set_ylabel('Friction Interleave (V)')
+        elif self.selectedScanMode == 'Main':
+            self.ui.mplWidget.canvas.axes4.set_title('Friction Profile')
+            self.ui.mplWidget.canvas.axes4.set_ylabel('Friction (V)')
         self.ui.mplWidget.canvas.axes4.plot(x_profile_full,frictionTrace['Image Data'][self.currentRow,:],'b--')
         self.ui.mplWidget.canvas.axes4.plot(x_profile_full,frictionRetrace['Image Data'][self.currentRow,:],'r--')
         self.ui.mplWidget.canvas.axes4.plot(x_profile,frictionTrace['Image Data'][self.currentRow,int(self.ui.lineEditMinCol.text()):int(self.ui.lineEditMaxCol.text())+1],'b')
         self.ui.mplWidget.canvas.axes4.plot(x_profile,frictionRetrace['Image Data'][self.currentRow,int(self.ui.lineEditMinCol.text()):int(self.ui.lineEditMaxCol.text())+1],'r')
-
-        self.ui.mplWidget.canvas.axes4.set_title('Friction Profile')
-        self.ui.mplWidget.canvas.axes4.set_ylabel('Friction (V)')
+            
 
         self.ui.mplWidget.canvas.axes6.clear()
-        self.ui.mplWidget.canvas.axes6.set_title('Friction Ramp')
-        if self.dataCalibrated == 0:
-            self.ui.mplWidget.canvas.axes6.plot(self.rawSetPoints,self.frictionRampV)
-            self.ui.mplWidget.canvas.axes6.plot(self.rawSetPoints[self.currentFileIndex],self.frictionRampV[self.currentFileIndex],'ro')
-            self.ui.mplWidget.canvas.axes6.set_ylabel('Friction (V)')
-        elif self.dataCalibrated == 1:
-            self.ui.mplWidget.canvas.axes6.plot(self.loadForce,self.frictionRampN)
-            self.ui.mplWidget.canvas.axes6.plot(self.loadForce[self.currentFileIndex],self.frictionRampN[self.currentFileIndex],'ro')
-            self.ui.mplWidget.canvas.axes6.set_ylabel('Friction (N)')
+        if self.selectedScanMode == 'Interleave':
+            self.ui.mplWidget.canvas.axes6.set_title('Friction Ramp Interleave')
+            if self.dataCalibrated == 0:
+                self.ui.mplWidget.canvas.axes6.plot(self.frictionRampV_Interleave)
+                self.ui.mplWidget.canvas.axes6.plot(self.frictionRampV_Interleave[self.currentFileIndex],'ro')
+                self.ui.mplWidget.canvas.axes6.set_ylabel('Friction Interleave(V)')
+            elif self.dataCalibrated == 1:
+                self.ui.mplWidget.canvas.axes6.plot(self.frictionRampN_Interleave)
+                self.ui.mplWidget.canvas.axes6.plot(self.frictionRampN_Interleave[self.currentFileIndex],'ro')
+                self.ui.mplWidget.canvas.axes6.set_ylabel('Friction Interleave (N)')
+        elif self.selectedScanMode == 'Main':
+            self.ui.mplWidget.canvas.axes6.set_title('Friction Ramp')
+            if self.dataCalibrated == 0:
+                self.ui.mplWidget.canvas.axes6.plot(self.rawSetPoints,self.frictionRampV)
+                self.ui.mplWidget.canvas.axes6.plot(self.rawSetPoints[self.currentFileIndex],self.frictionRampV[self.currentFileIndex],'ro')
+                self.ui.mplWidget.canvas.axes6.set_ylabel('Friction (V)')
+            elif self.dataCalibrated == 1:
+                self.ui.mplWidget.canvas.axes6.plot(self.loadForce,self.frictionRampN)
+                self.ui.mplWidget.canvas.axes6.plot(self.loadForce[self.currentFileIndex],self.frictionRampN[self.currentFileIndex],'ro')
+                self.ui.mplWidget.canvas.axes6.set_ylabel('Friction (N)')
 
         self.ui.mplWidget.canvas.figure.tight_layout()
         self.ui.mplWidget.canvas.draw()
