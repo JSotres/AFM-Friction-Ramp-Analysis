@@ -244,7 +244,7 @@ class frictionRampGUI(QMainWindow):
 
         for i in range(self.numberOfFiles):
             self.loadForce[i] = (self.rawSetPoints[i] - (initV+i*delta)) * vertSens * normConst
-        self.frictionCalibrationConstant = torsConst / (latSens * tipHeight)
+        self.frictionCalibrationConstant = latSens*torsConst / tipHeight
         self.dataCalibrated = True
         self.dataView = 'Calibrated'
         self.update_graph()
@@ -331,21 +331,37 @@ class frictionRampGUI(QMainWindow):
         if self.selectedScanMode == 'Interleave':
             self.ui.mplWidget.canvas.axes6.set_title('Friction Ramp Interleave')
             if self.dataView == 'Raw':
-                self.ui.mplWidget.canvas.axes6.errorbar(x=np.arange(self.frictionRampV_Interleave_mean.shape[0]),y=self.frictionRampV_Interleave_mean,yerr=self.frictionRampV_Interleave_std)
+                self.ui.mplWidget.canvas.axes6.errorbar(
+                    x=np.arange(self.frictionRampV_Interleave_mean.shape[0]),
+                    y=self.frictionRampV_Interleave_mean,
+                    yerr=self.frictionRampV_Interleave_std
+                )
                 self.ui.mplWidget.canvas.axes6.plot(self.frictionRampV_Interleave_mean[self.currentFileIndex],'ro')
                 self.ui.mplWidget.canvas.axes6.set_ylabel('Friction Interleave(V)')
             elif self.dataView == 'Calibrated':
-                self.ui.mplWidget.canvas.axes6.errorbar(np.arange(self.frictionRampV_Interleave_mean.shape[0]),self.frictionRampV_Interleave_mean*self.frictionCalibrationConstant,yerr=self.frictionRampV_Interleave_std*self.frictionCalibrationConstant)
+                self.ui.mplWidget.canvas.axes6.errorbar(
+                    x=np.arange(self.frictionRampV_Interleave_mean.shape[0]),
+                    y=self.frictionRampV_Interleave_mean*self.frictionCalibrationConstant,
+                    yerr=self.frictionRampV_Interleave_std*self.frictionCalibrationConstant
+                )
                 self.ui.mplWidget.canvas.axes6.plot(self.frictionRampV_Interleave_mean[self.currentFileIndex]*self.frictionCalibrationConstant,'ro')
                 self.ui.mplWidget.canvas.axes6.set_ylabel('Friction Interleave (N)')
         elif self.selectedScanMode == 'Main':
             self.ui.mplWidget.canvas.axes6.set_title('Friction Ramp')
             if self.dataView == 'Raw':
-                self.ui.mplWidget.canvas.axes6.errorbar(self.rawSetPoints,self.frictionRampV_mean,yerr=self.frictionRampV_std)
+                self.ui.mplWidget.canvas.axes6.errorbar(
+                    x=self.rawSetPoints,
+                    y=self.frictionRampV_mean,
+                    yerr=self.frictionRampV_std
+                )
                 self.ui.mplWidget.canvas.axes6.plot(self.rawSetPoints[self.currentFileIndex],self.frictionRampV_mean[self.currentFileIndex],'ro')
                 self.ui.mplWidget.canvas.axes6.set_ylabel('Friction (V)')
             elif self.dataView == 'Calibrated':
-                self.ui.mplWidget.canvas.axes6.errorbar(self.loadForce,self.frictionRampV_mean*self.frictionCalibrationConstant,yerr=self.frictionRampV_std*self.frictionCalibrationConstant)
+                self.ui.mplWidget.canvas.axes6.errorbar(
+                    x=self.loadForce,
+                    y=self.frictionRampV_mean*self.frictionCalibrationConstant,
+                    yerr=self.frictionRampV_std*self.frictionCalibrationConstant
+                )
                 self.ui.mplWidget.canvas.axes6.plot(self.loadForce[self.currentFileIndex],self.frictionRampV_mean[self.currentFileIndex]*self.frictionCalibrationConstant,'ro')
                 self.ui.mplWidget.canvas.axes6.set_ylabel('Friction (N)')
 
