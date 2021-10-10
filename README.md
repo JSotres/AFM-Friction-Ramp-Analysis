@@ -4,4 +4,4 @@ This version works (or has been only tested with) images obtained with obtained 
 
 I have also written a short [user guide](User_Guide_AFM_Friction_Ramp_Analysis.md).
 
-Developer: [Javier Sotres](https://www.jsotres.com)
+Contact: [Javier Sotres](https://www.jsotres.com)
