@@ -1236,6 +1236,7 @@
     </widget>
     <addaction name="menuFriction_Ramp"/>
     <addaction name="menuInterleave_Ramp"/>
+    <addaction name="actionExportFrictionProfiles"/>
    </widget>
    <widget class="QMenu" name="menuAnalysis">
     <property name="title">
@@ -1326,6 +1327,11 @@
   <action name="actionExportInterleaveCalibrated">
    <property name="text">
     <string>Calibrated</string>
+   </property>
+  </action>
+  <action name="actionExportFrictionProfiles">
+   <property name="text">
+    <string>Friction Profiles</string>
    </property>
   </action>
  </widget>

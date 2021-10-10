@@ -24,6 +24,7 @@ class frictionRampGUI(QMainWindow):
         self.ui.actionExportMainCalibrated.triggered.connect(self.exportCalibratedMainFrictionRamp)
         self.ui.actionExportInterleaveRaw.triggered.connect(self.exportRawInterleaveFrictionRamp)
         self.ui.actionExportInterleaveCalibrated.triggered.connect(self.exportCalibratedInterleaveFrictionRamp)
+        self.ui.actionExportFrictionProfiles.triggered.connect(self.exportFrictionProfiles)
         self.ui.actionOffsetFromFZ.triggered.connect(self.openForceRampGUI)
         self.ui.actionMainScan.triggered.connect(self.selectMainScan)
         self.ui.actionInterleaveScan.triggered.connect(self.selectInterleaveScan)
@@ -137,6 +138,38 @@ class frictionRampGUI(QMainWindow):
         filter_mask = "All Files (*)"
         name = QFileDialog.getSaveFileName(self, caption, directory, filter_mask)
         np.savetxt(name[0], np.transpose([self.loadForce,self.frictionRampV_Interleave_mean*self.frictionCalibrationConstant,self.frictionRampV_Interleave_std*self.frictionCalibrationConstant]), delimiter="\t")
+
+    def exportFrictionProfiles(self):
+
+        x_profile = np.arange(int(self.ui.lineEditMinCol.text()),int(self.ui.lineEditMaxCol.text())+1,1)
+        x_profile_full = np.arange(0,self.Files[0].Image[0]['Columns'],1)
+
+        if self.selectedScanMode == 'Interleave':
+            frictionRetrace = self.Files[self.currentFileIndex].getChannel('Friction','Interleave','Retrace')
+        elif self.selectedScanMode == 'Main':
+            frictionRetrace = self.Files[self.currentFileIndex].getChannel('Friction','Main','Retrace')
+
+        if self.selectedScanMode == 'Interleave':
+            frictionTrace = self.Files[self.currentFileIndex].getChannel('Friction','Interleave','Trace')
+        elif self.selectedScanMode == 'Main':
+            frictionTrace = self.Files[self.currentFileIndex].getChannel('Friction','Main','Trace')
+        
+        
+
+        trace_full = frictionTrace['Image Data'][self.currentRow,:]
+        retrace_full = frictionRetrace['Image Data'][self.currentRow,:]
+        trace = frictionTrace['Image Data'][self.currentRow,int(self.ui.lineEditMinCol.text()):int(self.ui.lineEditMaxCol.text())+1]
+        retrace = frictionRetrace['Image Data'][self.currentRow,int(self.ui.lineEditMinCol.text()):int(self.ui.lineEditMaxCol.text())+1]
+
+        
+        caption1 = "Save File full"
+        caption2 = "Save File short"
+        directory = os.getcwd()
+        filter_mask = "All Files (*)"
+        name_full = QFileDialog.getSaveFileName(self, caption1, directory, filter_mask)
+        name_short = QFileDialog.getSaveFileName(self, caption2, directory, filter_mask)
+        np.savetxt(name_full[0], np.transpose([x_profile_full, trace_full, retrace_full]), delimiter="\t")
+        np.savetxt(name_short[0], np.transpose([x_profile, trace, retrace]), delimiter="\t")
 
     def openForceRampGUI(self):
         self.ForceRampGUI = forceRampGUI()
