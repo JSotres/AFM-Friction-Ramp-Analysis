@@ -26,9 +26,14 @@ At present it has only been tested for images obtained with the Nanoscope v9 sof
 
 ### Common workflow
 
-After initializing the application, go to the menu bar and in File click on Load Images. Then select a series of consecutive AFM images obtained while varying the set point. You will then get something like:
+The common workflow for analyzing AFM friction data could be as follows:
+
+1. After initializing the application, go to the menu bar and in **File** (**1**) click on **Load Images**. Then select a set of AFM images containing friction images, in both trace and retrace directions, 
+obtained while varying the set point i.e., a common AFM friction data set. You will see something like:
 
 ![Main Window](UserGuideImages/MainWindowWithData.png)
+
+You will see the name of the displayed file in (**2**) and the file related data in the plot area (**3**). Specifically:
 
 In the first row of the plot area, the topography channel (in case it was registered) and corresponding profile are shown.
 
