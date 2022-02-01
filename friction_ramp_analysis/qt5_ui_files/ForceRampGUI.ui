@@ -105,7 +105,11 @@ Offset</string>
          </layout>
         </item>
         <item>
-         <widget class="QLineEdit" name="lineEditValue"/>
+         <widget class="QLineEdit" name="lineEditValue">
+          <property name="text">
+           <string>0</string>
+          </property>
+         </widget>
         </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout">
