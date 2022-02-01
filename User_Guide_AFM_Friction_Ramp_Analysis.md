@@ -61,7 +61,7 @@ the beginning and end of the experiment. For this, in the menu bar go to (**6**)
 You will need to zoom in the region corresponding to the free non-interacting cantilever. For this, first select the Zoom icon in the plot menu bar and then zoom in the corresponding region as indicate in the figure 
 above. You should see something like the following: 
 
-
+![FZ GUI](UserGuideImages/FZ2.png)
 
 select whether to calculate the offset from the forward curve, from the backward curve, or from the average of both:
 
