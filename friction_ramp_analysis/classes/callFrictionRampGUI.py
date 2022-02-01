@@ -39,6 +39,11 @@ class frictionRampGUI(QMainWindow):
         dataView: String: "Raw" or "Calibrated". Determines whether the friction data is to be seen raw (as registered) or calibrated.
         interleaveRegistered: Boolean. Indicates whether the load scans contain Interleave data.
         selectedScanMode: String: "Main" or "Interleave". Determines whether the "Main" or "Interleave" scans is used to calculate friction data.
+        popt: Numpy array. Contains parameters for friction fits.
+        frictionFitted: String. Indicates if the calibrated friction data has been fitted to a model.
+                        'No': It has not been fitted.
+                        'SingleAsperity': fitted to a single asperity model.
+                        'MultipleAsperity': fitted to a multiple asperity model.
 
     Methods:
         __init__(): Initiates the GUI
@@ -63,6 +68,8 @@ class frictionRampGUI(QMainWindow):
         showNextRow(): Updates the visualized image row when the Push Button pushButtonNextRow is pressed.
         calculateFriction(): Calculates (raw) friction for the loaded set of scans.
         calibrate(): Calibrates friction data.
+        fitMultipleAsperity(): fits load vs friction data to a multiple asperity model.
+        fitSingleAsperity(): fits load vs friction data to a single asperity model.
         update_graph(): Updates graphs.
     """
     def __init__(self):
@@ -112,6 +119,8 @@ class frictionRampGUI(QMainWindow):
         self.dataView = 'Raw'
         self.interleaveRegistered = False
         self.selectedScanMode = 'Main'
+        self.popt = None
+        self.frictionFitted = 'No'
         self.show()
 
     def viewRawData(self):
@@ -339,21 +348,25 @@ class frictionRampGUI(QMainWindow):
         self.update_graph()
 
     def fitMultipleAsperity(self):
-         if (self.selectedScanMode == 'Main' and self.dataCalibrated == True):
+        if (self.selectedScanMode == 'Main' and self.dataCalibrated == True):
              x = self.loadForce
              y=self.frictionRampV_mean*self.frictionCalibrationConstant
-             popt, pcov = curve_fit(functionMultipleAsperity, x, y)
-             self.ui.frictionCoefficientLabel.setText('{0:.2f}'.format(popt[0]))
-             self.ui.adhesionForceLabel.setText(str('{0:.2f}'.format(popt[1]))
+             self.popt, pcov = curve_fit(functionMultipleAsperity, x, y)
+             self.ui.frictionCoefficientLabel.setText('{0:.2f}'.format(self.popt[0]))
+             self.ui.adhesionForceLabel.setText('{0:.2f}'.format(self.popt[1]))
+             self.frictionFitted = 'MultipleAsperity'
+             self.update_graph()
              
     def fitSingleAsperity(self):
         
          if (self.selectedScanMode == 'Main' and self.dataCalibrated == True):
              x = self.loadForce
              y=self.frictionRampV_mean*self.frictionCalibrationConstant
-             popt, pcov = curve_fit(functionSingleAsperity, x, y)
-             self.ui.frictionCoefficientLabel.setText('{0:.2f}'.format(popt[0]))
-             self.ui.adhesionForceLabel.setText('{0:.2f}'.format(popt[1]))
+             self.popt, pcov = curve_fit(functionSingleAsperity, x, y)
+             self.ui.frictionCoefficientLabel.setText('{0:.2f}'.format(self.popt[0]))
+             self.ui.adhesionForceLabel.setText('{0:.2f}'.format(self.popt[1]))
+             self.frictionFitted = 'SingleAsperity'
+             self.update_graph()
 
     
 
@@ -502,6 +515,12 @@ class frictionRampGUI(QMainWindow):
                 self.ui.mplWidget.canvas.axes6.plot(self.loadForce[self.currentFileIndex],self.frictionRampV_mean[self.currentFileIndex]*self.frictionCalibrationConstant,'ro')
                 self.ui.mplWidget.canvas.axes6.set_ylabel('Friction (N)')
                 self.ui.mplWidget.canvas.axes6.set_xlabel('Load (N)')
+
+                # Plot fit to friction
+                if self.frictionFitted == 'SingleAsperity':
+                    self.ui.mplWidget.canvas.axes6.plot(self.loadForce, functionSingleAsperity(self.loadForce, *self.popt), 'g--')
+                elif self.frictionFitted == 'MultipleAsperity':
+                    self.ui.mplWidget.canvas.axes6.plot(self.loadForce, functionMultipleAsperity(self.loadForce, *self.popt), 'g--')
 
         self.ui.mplWidget.canvas.figure.tight_layout()
         self.ui.mplWidget.canvas.draw()
