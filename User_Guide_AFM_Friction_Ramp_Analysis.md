@@ -41,19 +41,20 @@ The trace and retrace friction channels are shown in (**3c**) and (**3d**) respe
 
 The calculated friction vs. load data is shown in (**3f**). At first, this plot will show the raw photodetector signals.
 
-(**4**) In the upper right section of the GUI a set of widgets are shown within the Group Box name **Navigation**. These widgets allow to:
+(**4**) In the upper right section of the GUI a set of widgets are shown within the Group Box named **Navigation**. These widgets allow to:
 
 - change the visualized file among those previously loaded.
 - change the currently visualized row.
 - select the minimum and maximum rows and columns numbers that will be used to calculate friction (after changing these, click **Update**).
 
+(**5**) In the middle right section of the GUI a set of widgets are shown within the Group Box named **Calibration**. These allow to set values for the parameters needed to transform the raw data (photodetector signals) 
+into force values. You can have a look at this [paper](https://pubs.acs.org/doi/full/10.1021/la201673r) and references therein for the underlying theory and meaning of the different parameters. 
+The user will need to obtain some of these parameters independently, and provided them to the software: i) the effective tip height (in nm), ii) the lateral sensitivity of the AFM (in rad/V), iii) the torsional constant of 
+the cantilever (in nm\*nN/rad), iv) the vertical sensitivity (in nm/V) and v) the normal constant of the cantilever (in N/m).
 
-## Data Analysis
-In the bottom right corner of the main window one can enter the parameters needed for transforming into forces the raw lateral and vertical photodetector signals. Have a look at this [paper](https://pubs.acs.org/doi/full/10.1021/la201673r) and its referenced for the underlying theory.
-
-In the same section it is also possible to enter the vertical photodetector signals corresponding to the cantilever far from the sample at the beginning and end of the experiment. 
-This allows correcting drifts in this signal during the time of the experiment. These quantities can be entered manually, or obtained from force curves. For this latter approach, in the menu bar 
-go to Analysis->Offset from FZ. The following window will show up:
+This group of parameters within the **Calibration** Group Box also include the vertical photodetector signal corresponding to the cantilever far from the sample at the beginning and at the end of the experiment i.e., the 
+offset equilibrium values. The user can enter these values directly if they have been previously found. However, the software also allows to calculate them from normal force measurements in case they have been acquired at 
+the beginning and end of the experiment. For this, in the menu bar go to (**6**) **Analysis**->**Offset from FZ**. The following gui will show up:
 
 ![FZ GUI](UserGuideImages/FZ1.png)
 
