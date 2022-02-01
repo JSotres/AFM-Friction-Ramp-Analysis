@@ -525,4 +525,4 @@ class frictionRampGUI(QMainWindow):
         self.ui.mplWidget.canvas.figure.tight_layout()
         self.ui.mplWidget.canvas.draw()
 
-        self.ui.labelImageName.setText(self.fileList[self.currentFileIndex])
+        self.ui.labelImageName.setText("File: " + self.fileList[self.currentFileIndex])

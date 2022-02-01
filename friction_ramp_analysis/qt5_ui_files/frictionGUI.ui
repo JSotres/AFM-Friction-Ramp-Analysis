@@ -85,6 +85,14 @@
                   <height>17</height>
                  </size>
                 </property>
+                <property name="font">
+                 <font>
+                  <family>Ubuntu Condensed</family>
+                  <pointsize>13</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
                 <property name="text">
                  <string>-</string>
                 </property>
