@@ -8,6 +8,13 @@ from ..qt5_ui_files.frictionGUI import *
 from matplotlib.backends.backend_qt5agg import (NavigationToolbar2QT as NavigationToolbar)
 import os
 import math
+from scipy.optimize import curve_fit
+
+def functionSingleAsperity(x, a, b):
+    return a*(x+b)**(2/3)
+
+def functionMultipleAsperity(x, a, b):
+    return a*(x+b)
 
 
 class frictionRampGUI(QMainWindow):
@@ -73,6 +80,8 @@ class frictionRampGUI(QMainWindow):
         self.ui.actionExportInterleaveCalibrated.triggered.connect(self.exportCalibratedInterleaveFrictionRamp)
         self.ui.actionExportFrictionProfiles.triggered.connect(self.exportFrictionProfiles)
         self.ui.actionOffsetFromFZ.triggered.connect(self.openForceRampGUI)
+        self.ui.actionFitSingleAsperity.triggered.connect(self.fitSingleAsperity)
+        self.ui.actionFitMultipleAsperity.triggered.connect(self.fitMultipleAsperity)
         self.ui.actionMainScan.triggered.connect(self.selectMainScan)
         self.ui.actionInterleaveScan.triggered.connect(self.selectInterleaveScan)
         self.ui.pushButtonPrevImage.clicked.connect(self.showPreviousImage)
@@ -329,6 +338,25 @@ class frictionRampGUI(QMainWindow):
         self.dataView = 'Calibrated'
         self.update_graph()
 
+    def fitMultipleAsperity(self):
+         if (self.selectedScanMode == 'Main' and self.dataCalibrated == True):
+             x = self.loadForce
+             y=self.frictionRampV_mean*self.frictionCalibrationConstant
+             popt, pcov = curve_fit(functionMultipleAsperity, x, y)
+             self.ui.frictionCoefficientLabel.setText('{0:.2f}'.format(popt[0]))
+             self.ui.adhesionForceLabel.setText(str('{0:.2f}'.format(popt[1]))
+             
+    def fitSingleAsperity(self):
+        
+         if (self.selectedScanMode == 'Main' and self.dataCalibrated == True):
+             x = self.loadForce
+             y=self.frictionRampV_mean*self.frictionCalibrationConstant
+             popt, pcov = curve_fit(functionSingleAsperity, x, y)
+             self.ui.frictionCoefficientLabel.setText('{0:.2f}'.format(popt[0]))
+             self.ui.adhesionForceLabel.setText('{0:.2f}'.format(popt[1]))
+
+    
+
     def update_graph(self):
         """
         Updates the graphs of the GUI.
@@ -434,7 +462,7 @@ class frictionRampGUI(QMainWindow):
                     
             
 
-        # Axes 3: Friction Ramp
+        # Axes 6: Friction Ramp
         self.ui.mplWidget.canvas.axes6.clear()
         if self.selectedScanMode == 'Interleave':
             self.ui.mplWidget.canvas.axes6.set_title('Friction Ramp Interleave')
