@@ -70,7 +70,17 @@ or to the end of the experiment.
 Back in the Main Window tou can now press the **Calibrate** push button. This will provide both load and friction in force (N) units. It will update as well the friction vs load plot (**3f**), now 
 in force units.
 
-## Export Data
-In the Menu Bar, go to Export->Friction Ramp, and there select between Raw and Calibrated. This will allow you to export the (raw or calibrated) friction vs load plot in 2 columns ASCII file.
+If you go in the menu bar to (**6**) **Analysis**->**Friction Fit**, you will be able to fit the calibrated friction vs load data to either a **Single Asperity Model** or to a **Multiple Asperity Model**. The obtaned fricton 
+coefficient (mu) and adhesion force will show up in the Group Box named **Fit Parameters** in the bottom right section of the gui (**7**).
+
+(**8**) In **View** within the Menu Bar you will be able to switch between raw and calibrated data.
+
+(**9**) in **Export** within the Menu Bar you will be able to export different sets of data as csv files. Specifically, the friction ramp (in raw or calibrated units) and the visualized friction profiles i.e., 
+those in (**3e**).
+
+(**10**) In case that your files include friction channels obtained while operating in the lift mode, you can perform all the analysis detailed above on these channels by selecting instead **Lift** within the **Scan Type** 
+menu in the menu bar.
+
+
 
 
