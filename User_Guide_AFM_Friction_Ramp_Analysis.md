@@ -54,13 +54,16 @@ the cantilever (in nm\*nN/rad), iv) the vertical sensitivity (in nm/V) and v) th
 
 This group of parameters within the **Calibration** Group Box also include the vertical photodetector signal corresponding to the cantilever far from the sample at the beginning and at the end of the experiment i.e., the 
 offset equilibrium values. The user can enter these values directly if they have been previously found. However, the software also allows to calculate them from normal force measurements in case they have been acquired at 
-the beginning and end of the experiment. For this, in the menu bar go to (**6**) **Analysis**->**Offset from FZ**. The following gui will show up:
+the beginning and end of the experiment. For this, in the menu bar go to (**6**) **Analysis**->**Offset from FZ**. You will be asked to load a normal force measurement. Then, the following gui will show up:
 
 ![FZ GUI](UserGuideImages/FZ1.png)
 
-Zoom in the region corresponding to the free non-interacting cantilever, select whether to calculate the offset from the forward curve, from the backward curve, or from the average of both:
+You will need to zoom in the region corresponding to the free non-interacting cantilever. For this, first select the Zoom icon in the plot menu bar and then zoom in the corresponding region as indicate in the figure 
+above. You should see something like the following: 
 
 ![FZ GUI](UserGuideImages/FZ2.png)
+
+select whether to calculate the offset from the forward curve, from the backward curve, or from the average of both:
 
 Press the Vertical Offset Button. The press Send to Vi or Send to Vf buttons to send to the Main Window the calculated offset as the one corresponding to the start or to the end of the experiment.
 
