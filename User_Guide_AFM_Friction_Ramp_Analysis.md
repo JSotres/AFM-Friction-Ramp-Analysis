@@ -39,9 +39,14 @@ You will see the name of the displayed file in (**2**) and the file related data
 
 The trace and retrace friction channels are shown in (**3c**) and (**3d**) respectively. The friction traces corresponding to the rows highlighted in red in the friction channels are shown in (**3e**).
 
-(**4**) In the upper right section of the GUI a set of widgets are shown within the Group Box name **Navigation**. 
+The calculated friction vs. load data is shown in (**3f**). At first, this plot will show the raw photodetector signals.
 
-under thit is possible to change the visualized image and row. It is also possible to select a range of rows and columns to perform further analysys.
+(**4**) In the upper right section of the GUI a set of widgets are shown within the Group Box name **Navigation**. These widgets allow to:
+
+- change the visualized file among those previously loaded.
+- change the currently visualized row.
+- select the minimum and maximum rows and columns numbers that will be used to calculate friction (after changing these, click **Update**).
+
 
 ## Data Analysis
 In the bottom right corner of the main window one can enter the parameters needed for transforming into forces the raw lateral and vertical photodetector signals. Have a look at this [paper](https://pubs.acs.org/doi/full/10.1021/la201673r) and its referenced for the underlying theory.
