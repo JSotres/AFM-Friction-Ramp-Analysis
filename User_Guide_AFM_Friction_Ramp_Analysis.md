@@ -67,7 +67,8 @@ First, you will need to select in (**A**) whether to calculate the offset from t
 calculated average value will show up in the gui edit box. Finally, press **Send to Vi** or **Send to Vf** buttons (**C**) to send to the Main Window the calculated offset as the one corresponding to the start 
 or to the end of the experiment.
 
-Finally, in the Main Window press Calibrate to get the friction vs load plot in force units.
+Back in the Main Window tou can now press the **Calibrate** push button. This will provide both load and friction in force (N) units. It will update as well the friction vs load plot (**3f**), now 
+in force units.
 
 ## Export Data
 In the Menu Bar, go to Export->Friction Ramp, and there select between Raw and Calibrated. This will allow you to export the (raw or calibrated) friction vs load plot in 2 columns ASCII file.
