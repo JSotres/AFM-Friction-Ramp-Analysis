@@ -20,7 +20,7 @@ At present it has only been tested for images obtained with the Nanoscope v9 sof
 	```
 	python3 -m friction_ramp_analysis
 	```
-	Thiw will open the following graphical Interface:
+	This will open the following graphical Interface:
 	
 	![Main Window](UserGuideImages/MainWindow.png)
 
@@ -28,22 +28,20 @@ At present it has only been tested for images obtained with the Nanoscope v9 sof
 
 The common workflow for analyzing AFM friction data could be as follows:
 
-1. After initializing the application, go to the menu bar and in **File** (**1**) click on **Load Images**. Then select a set of AFM images containing friction images, in both trace and retrace directions, 
+After initializing the application, go to the menu bar and in **File** (**1**) click on **Load Images**. Then select a set of AFM images containing friction images, in both trace and retrace directions, 
 obtained while varying the set point i.e., a common AFM friction data set. You will see something like:
 
 ![Main Window](UserGuideImages/MainWindowWithData.png)
 
 You will see the name of the displayed file in (**2**) and the file related data in the plot area (**3**). Specifically:
 
-In the first row of the plot area, the topography channel (in case it was registered) and corresponding profile are shown.
+(**3a**) The topography channel (in case it was registered). You will also see a red horizontal line that highlights the current row, which is actually displayed in (**3b**).
 
-The trace and retrace friction channels are shown in the second and third row of the first column of the plot area.
+The trace and retrace friction channels are shown in (**3c**) and (**3d**) respectively. The friction traces corresponding to the rows highlighted in red in the friction channels are shown in (**3e**).
 
-The trace and retrace profiles of the raw friction signal corresponding to the selected row are shown in the second row second column of the plot area.
+(**4**) In the upper right section of the GUI a set of widgets are shown within the Group Box name **Navigation**. 
 
-The friction vs load plot is shown in the bottom right corner of the plot area. Just after loading the images, this plot will represent raw lateral vs vertical photodetector signals. In order to obtain a plot of friction vs load forces, 
-
-In the upper right section of the main window it is possible to change the visualized image and row. It is also possible to select a range of rows and columns to perform further analysys.
+under thit is possible to change the visualized image and row. It is also possible to select a range of rows and columns to perform further analysys.
 
 ## Data Analysis
 In the bottom right corner of the main window one can enter the parameters needed for transforming into forces the raw lateral and vertical photodetector signals. Have a look at this [paper](https://pubs.acs.org/doi/full/10.1021/la201673r) and its referenced for the underlying theory.
