@@ -63,9 +63,9 @@ above. You should see something like the following:
 
 ![FZ GUI](UserGuideImages/FZ2.png)
 
-select whether to calculate the offset from the forward curve, from the backward curve, or from the average of both:
-
-Press the Vertical Offset Button. The press Send to Vi or Send to Vf buttons to send to the Main Window the calculated offset as the one corresponding to the start or to the end of the experiment.
+First, you will need to select in (**A**) whether to calculate the offset from the forward curve, from the backward curve, or from the average of both. Then, press the **Vertical Offset** button (**B**). The 
+calculated average value will show up in the gui edit box. Finally, press **Send to Vi** or **Send to Vf** buttons (**C**) to send to the Main Window the calculated offset as the one corresponding to the start 
+or to the end of the experiment.
 
 Finally, in the Main Window press Calibrate to get the friction vs load plot in force units.
 
