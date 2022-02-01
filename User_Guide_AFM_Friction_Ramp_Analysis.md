@@ -56,7 +56,7 @@ This group of parameters within the **Calibration** Group Box also include the v
 offset equilibrium values. The user can enter these values directly if they have been previously found. However, the software also allows to calculate them from normal force measurements in case they have been acquired at 
 the beginning and end of the experiment. For this, in the menu bar go to (**6**) **Analysis**->**Offset from FZ**. You will be asked to load a normal force measurement. Then, the following gui will show up:
 
-
+![FZ GUI](UserGuideImages/FZ1.png)
 
 You will need to zoom in the region corresponding to the free non-interacting cantilever. For this, first select the Zoom icon in the plot menu bar and then zoom in the corresponding region as indicate in the figure 
 above. You should see something like the following: 
