@@ -11,6 +11,53 @@ import math
 
 
 class frictionRampGUI(QMainWindow):
+    """
+    Class for the main GUI of the program
+
+    Attributes:
+        ui: handle to the graphical interface.
+        File: List of objects of the NanoscopeImage class, each one corresponding to, and calculated from, one of the loaded files.
+        frictionRampV_mean: List with the mean friction value (in Volts) for each of the loaded "Main" scans.
+        frictionRampV_std: List with the std friction value (in Volts) for each of the loaded "Main" scans.
+        frictionRampV_Interleave_mean: List with the mean friction value (in Volts) for each of the loaded "Interleave" scans.
+        frictionRampV_Interleave_std: List with the std friction value (in Volts) for each of the loaded "Interleave" scans.
+        frictionCalibrationConstant: Float. Constant to transform friction data from Volts to Force Units (N).
+        currentFileIndex: Int. Index for the current Scan.
+        currentRow: Int. Index for the current row.
+        numberOfFiles: Int. Total number of loaded files.
+        fileList: List with the names of the loaded files.
+        rawSetPoints: List with the loads (in Volts) of each of the loaded friction scans.
+        loadForce: List with the loads (in Newtons) of each of the loaded friction scans.
+        dataCalibrated: Boolean. Denoted whether friction data has been calibrated.
+        dataView: String: "Raw" or "Calibrated". Determines whether the friction data is to be seen raw (as registered) or calibrated.
+        interleaveRegistered: Boolean. Indicates whether the load scans contain Interleave data.
+        selectedScanMode: String: "Main" or "Interleave". Determines whether the "Main" or "Interleave" scans is used to calculate friction data.
+
+    Methods:
+        __init__(): Initiates the GUI
+        viewRawData(): Updates graph with raw data.
+        viewCalibratedData(): Updates graphs with calibrated data.
+        selectMainScan(): Selects Main scans for friction data.
+        selectInterleaveScan(): Selects Interleave scans for friction data. 
+        openfiledialog(): Opens a QFileDialog for loading friction scans.
+        exportRawMainFrictionRamp(): Exports the friction ramp (non-calibrated, in raw units) corresponding to the "Main" scans as an ASCII file.
+        exportCalibratedMainFrictionRamp(): Exports the calibrated friction ramp corresponding to the "Main" scans as an ASCII file.
+        exportRawInterleaveFrictionRamp(): Exports the friction ramp (non-calibrated, in raw units) corresponding to the "Interleave" scans as an ASCII file.
+        exportCalibratedInterleaveFrictionRamp(): Exports the calibrated friction ramp corresponding to the "Interleave" scans as an ASCII file.
+        exportFrictionProfiles(): Exports as an ASCII file the currently viewed friction profile (both the full profiles and the selected region as separate files).
+        openForceRampGUI(): Opens the graphical interface ForceRampGUI, needed for determining the load offset at the beginning and end of the experiment.
+        slotVi(): Updates the value in the Edit Box lineEditInitV with the signal emitted from ForceRampGUI.
+        slotVf(): Updates the value in the Edit Box lineEditFinalV with the signal emitted from ForceRampGUI.
+        showPreviousImage(): Updates the visualized image when the Push Button pushButtonPrevImage is pressed.
+        showNextImage(): Updates the visualized image when the Push Button pushButtonNextImage is pressed.
+        updateImage(): Updates the visualized image to that entered in the Edit Box lineEditImageNo.
+        updateRow(): Updates the visualized image row to that entered in the Edit Box lineEditRowNo.
+        showPreviousRow(): Updates the visualized image row when the Push Button pushButtonPrevRow is pressed.
+        showNextRow(): Updates the visualized image row when the Push Button pushButtonNextRow is pressed.
+        calculateFriction(): Calculates (raw) friction for the loaded set of scans.
+        calibrate(): Calibrates friction data.
+        update_graph(): Updates graphs.
+    """
     def __init__(self):
         super().__init__()
         #Load the UI
@@ -283,6 +330,18 @@ class frictionRampGUI(QMainWindow):
         self.update_graph()
 
     def update_graph(self):
+        """
+        Updates the graphs of the GUI.
+        Specifically, there are 6 graphs with the lay out of 3 rows and 2 columns.
+        Row 1, Column 1 (Axes1): Height Image.
+        Row 1, Column 2 (Axes2): Height Profile.
+        Row 2, Column 1 (Axes3): Friction Image (Trace).
+        Row 2, Column 2 (Axes4): Friction Profiles.
+        Row 3, Column 1 (Axes5): Friction Image (ReTrace).
+        Row 3, Column 2 (Axes6): Friction Ramp.
+        """
+
+        # Check that Row and Column numbers are within limits. If not, set to boundaries.
         if int(self.ui.lineEditMinCol.text())<0:
             self.ui.lineEditMinCol.setText(str(0))
         if int(self.ui.lineEditMaxCol.text()) > self.Files[0].Image[0]['Columns']-1:
@@ -292,27 +351,40 @@ class frictionRampGUI(QMainWindow):
         if int(self.ui.lineEditMaxRow.text()) > self.Files[0].Image[0]['Rows']-1:
             self.ui.lineEditMaxRow.setText(str(self.Files[0].Image[0]['Rows']-1))
 
+        # Relative values of the min and max columns with respect to the total number of columns.
+        # It is needed later on to draw a line over the images indicating the columns used for calculations.
         x_min = int(self.ui.lineEditMinCol.text())/self.Files[0].Image[0]['Columns']
         x_max = int(self.ui.lineEditMaxCol.text())/self.Files[0].Image[0]['Columns']
+
+        # Creates numpy arrays containing the columns of relevance for the friction profiles. Both the selected and
+        # the full profiles. It is used later on to plot the selected and full profiles with different type of lines.
         x_profile = np.arange(int(self.ui.lineEditMinCol.text()),int(self.ui.lineEditMaxCol.text())+1,1)
         x_profile_full = np.arange(0,self.Files[0].Image[0]['Columns'],1)
 
-        self.calculateFriction()
-        
+        # Calculates friction once more. I call this function here as the function update_graph()
+        # is sometines called when friction relevant data/parametes have changed.
+        self.calculateFriction()        
 
+        # Axes 1: Height Image
+        # Draws the image:
         self.ui.mplWidget.canvas.axes1.clear()
         self.ui.mplWidget.canvas.axes1.set_axis_off()
         topography = self.Files[self.currentFileIndex].getChannel('Height','Main','Retrace')
         self.ui.mplWidget.canvas.axes1.imshow(topography['Processed Image Data'], cmap='gray', aspect='auto')
+        # Draws on to of the image a red line indicating the columns used for calculations
         self.ui.mplWidget.canvas.axes1.axhline(y=self.currentRow,xmin=x_min,xmax=x_max,color='red')
         self.ui.mplWidget.canvas.axes1.set_title('Height')
 
+        # Axes 2: Height profile.
+        # Draws a dashed line for the full profile
+        # And on top a solid line for the selected profile.
         self.ui.mplWidget.canvas.axes2.clear()
         self.ui.mplWidget.canvas.axes2.plot(x_profile_full,topography['Processed Image Data'][self.currentRow,:],'--')
         self.ui.mplWidget.canvas.axes2.plot(x_profile,topography['Processed Image Data'][self.currentRow,int(self.ui.lineEditMinCol.text()):int(self.ui.lineEditMaxCol.text())+1],'b')
         self.ui.mplWidget.canvas.axes2.set_title('Height Profile')
         self.ui.mplWidget.canvas.axes2.set_ylabel('Height (nm)')
 
+        # Axes 3: Friction Image (Trace)
         self.ui.mplWidget.canvas.axes3.clear()
         self.ui.mplWidget.canvas.axes3.set_axis_off()
         if self.selectedScanMode == 'Interleave':
@@ -324,6 +396,7 @@ class frictionRampGUI(QMainWindow):
         self.ui.mplWidget.canvas.axes3.imshow(frictionTrace['Processed Image Data'], cmap='gray', aspect='auto')
         self.ui.mplWidget.canvas.axes3.axhline(y=self.currentRow,xmin=x_min,xmax=x_max,color='red')
 
+        # Axes 5: Friction Image (ReTrace)
         self.ui.mplWidget.canvas.axes5.clear()
         self.ui.mplWidget.canvas.axes5.set_axis_off()
         if self.selectedScanMode == 'Interleave':
@@ -336,6 +409,7 @@ class frictionRampGUI(QMainWindow):
         self.ui.mplWidget.canvas.axes5.axhline(y=self.currentRow,xmin=x_min,xmax=x_max,color='red')
         
 
+        # Axes 4: Friction Profiles
         self.ui.mplWidget.canvas.axes4.clear()
         if self.selectedScanMode == 'Interleave':
             self.ui.mplWidget.canvas.axes4.set_title('Friction Interleave Profile')
@@ -360,6 +434,7 @@ class frictionRampGUI(QMainWindow):
                     
             
 
+        # Axes 3: Friction Ramp
         self.ui.mplWidget.canvas.axes6.clear()
         if self.selectedScanMode == 'Interleave':
             self.ui.mplWidget.canvas.axes6.set_title('Friction Ramp Interleave')
@@ -389,6 +464,7 @@ class frictionRampGUI(QMainWindow):
                 )
                 self.ui.mplWidget.canvas.axes6.plot(self.rawSetPoints[self.currentFileIndex],self.frictionRampV_mean[self.currentFileIndex],'ro')
                 self.ui.mplWidget.canvas.axes6.set_ylabel('Friction (V)')
+                self.ui.mplWidget.canvas.axes6.set_xlabel('Load (V)')
             elif self.dataView == 'Calibrated':
                 self.ui.mplWidget.canvas.axes6.errorbar(
                     x=self.loadForce,
@@ -397,6 +473,7 @@ class frictionRampGUI(QMainWindow):
                 )
                 self.ui.mplWidget.canvas.axes6.plot(self.loadForce[self.currentFileIndex],self.frictionRampV_mean[self.currentFileIndex]*self.frictionCalibrationConstant,'ro')
                 self.ui.mplWidget.canvas.axes6.set_ylabel('Friction (N)')
+                self.ui.mplWidget.canvas.axes6.set_xlabel('Load (N)')
 
         self.ui.mplWidget.canvas.figure.tight_layout()
         self.ui.mplWidget.canvas.draw()
